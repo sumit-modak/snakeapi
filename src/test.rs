@@ -1,11 +1,25 @@
 use std::process::Stdio;
-use tokio::join;
 use tokio::process::Command;
 
 pub async fn test_this_fn() {
+    println!("PID: {}", std::process::id());
     test_piping().await;
+    hello().await;
 }
 
+pub async fn hello() {
+    let mut sleep = Command::new("sleep")
+        .arg("60")
+        // .stdout(Stdio::piped())
+        .spawn()
+        .expect("failed to spawn sleep");
+
+    println!("{:?}", sleep.id());
+    println!("{:?}", sleep.wait().await);
+}
+
+// fd[0] = read end
+// fd[1] = write end
 pub async fn test_piping() {
     let mut echo = Command::new("echo")
         .arg("hello world!")
@@ -27,7 +41,7 @@ pub async fn test_piping() {
         .spawn()
         .expect("failed to spawn tr");
 
-    let (echo_result, tr_output) = join!(echo.wait(), tr.wait_with_output());
+    let (echo_result, tr_output) = tokio::join!(echo.wait(), tr.wait_with_output());
 
     println!("{:?}", echo_result.unwrap().success());
 
