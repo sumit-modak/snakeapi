@@ -1,5 +1,5 @@
 [package]
-name = "gentle-snake"
+name = "snakeapi"
 version = "0.1.0"
 edition = "2021"
 
